@@ -7,5 +7,3 @@ pluginManagement {
 }
 
 rootProject.name = 'idpay-lolab-payment'
-
-include "ignite-member"

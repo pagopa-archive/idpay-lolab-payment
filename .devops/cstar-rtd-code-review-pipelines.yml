@@ -1,51 +1,54 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# Run Automated Test in UAT environment
 
-pr:
-  autoCancel: false
+trigger: none
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: ubuntu-22.04
 
-steps:
+variables:
+  # Python version: 3.10
+  - name: pythonVersion
+    value: '3.10'
 
-  - task: SonarCloudPrepare@1
-    displayName: 'Prepare SonarCloud analysis configuration'
-    inputs:
-      SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
-      organization: '$(SONARCLOUD_ORG)'
-      scannerMode: Other
-      extraProperties: |
-        sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
-        sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
+  # Folder name of this sub-repository
+  - name: working-dir
+    value: '.'
 
+  # Project root folder
+  - name: projectRoot
+    value: $(System.DefaultWorkingDirectory)/$(working-dir)
 
-  - task: Gradle@3
-    inputs:
-      gradleWrapperFile: 'gradlew'
-      tasks: 'clean build jacocoTestReport'
-      publishJUnitResults: true
-      testResultsFiles: '**/TEST-*.xml'
-      javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '1.17'
-      sonarQubeRunAnalysis: false
+parameters:
+  - name: 'RATE'
+    displayName: 'Target RP/s'
+    type: number
+  - name: 'INITIAL_VUS'
+    displayName: 'Pre allocated virtual users'
+    type: number
+  - name: 'VUS_MAX_ENV'
+    displayName: 'Maximum number of virtual users'
+    type: number
 
-  - bash: xmlReportPaths=$(find "$(pwd)" -path '*jacoco.xml' | sed 's/.*/&/' | tr '\n' ','); echo "##vso[task.setvariable variable=xmlReportPaths]$xmlReportPaths"
-    displayName: finding jacoco.xml
-
-  - task: Gradle@3
-    inputs:
-      gradleWrapperFile: 'gradlew'
-      tasks: "sonar"
-      options: '-Dsonar.coverage.jacoco.xmlReportPaths=$(xmlReportPaths) -Dorg.gradle.jvmargs=-Xmx4096M'
-      publishJUnitResults: false
-      javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '1.17'
-      sonarQubeRunAnalysis: true
-      sqGradlePluginVersionChoice: 'build'
-
-  - task: SonarCloudPublish@1
-    inputs:
-      pollingTimeoutSec: '300'
+jobs:
+  - job:
+    displayName: "Performance Test"
+    pool:
+      name: cstar-dev-linux
+    timeoutInMinutes: 0
+    steps:
+      - script: |
+          docker pull grafana/k6:latest
+        displayName: Pull k6 image
+      - script: |
+          docker run -i \
+            --user $UID \
+            -v $(pwd):/app \
+            --workdir "/app" \
+            -e RESULTS_DIR=/app \
+            -e MAX_VUS=${{ parameters.VUS_MAX_ENV }} \
+            -e INITIAL_VUS=${{ parameters.INITIAL_VUS }} \
+            -e RATE=${{ parameters.RATE }} \
+            grafana/k6:latest \
+            run /app/load-test/transaction-load-test.js
+        displayName: Run k6 Transaction Load Test
+        timeoutInMinutes: 0

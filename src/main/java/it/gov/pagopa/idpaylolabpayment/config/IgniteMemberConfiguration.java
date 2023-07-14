@@ -1,4 +1,4 @@
-package it.gov.pagopa.ignitemember;
+package it.gov.pagopa.idpaylolabpayment.config;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCheckedException;
@@ -9,6 +9,8 @@ import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.DeploymentMode;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
+import org.apache.ignite.spi.metric.jmx.JmxMetricExporterSpi;
+import org.apache.ignite.spi.metric.log.LogExporterSpi;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,16 +33,15 @@ public class IgniteMemberConfiguration {
       DataRegionConfiguration simpleCacheDataRegion
   ) {
     final var storageConfiguration = new DataStorageConfiguration();
-    storageConfiguration.setDefaultDataRegionConfiguration(new DataRegionConfiguration());
-    storageConfiguration.setDataRegionConfigurations(
-        simpleCacheDataRegion
-    );
+    storageConfiguration.setDefaultDataRegionConfiguration(simpleCacheDataRegion);
+    storageConfiguration.setSystemRegionMaxSize(50L * 1024 * 1024); // MB
 
     return new IgniteConfiguration()
         .setIgniteInstanceName("ignite-cluster")
         .setDataStorageConfiguration(storageConfiguration)
         .setPeerClassLoadingEnabled(true)
         .setDeploymentMode(DeploymentMode.CONTINUOUS)
+        .setMetricExporterSpi(new JmxMetricExporterSpi())
         .setCommunicationSpi(new TcpCommunicationSpi());
   }
 

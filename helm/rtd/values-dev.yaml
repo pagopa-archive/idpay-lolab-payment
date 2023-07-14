@@ -10,13 +10,16 @@ microservice-chart:
   resources:
     requests:
       memory: "512Mi"
-      cpu: "50m"
+      cpu: "100m"
     limits:
       memory: "768Mi"
-      cpu: "100m"
+      cpu: "250m"
 
   envSecret:
     aks-api-url: cstar-d-weu-dev01-aks-apiserver-url
+
+  envConfig:
+    JAVA_TOOL_OPTIONS: "-Xms512m -Xmx768m"
 
   keyvault:
     name: "cstar-d-rtd-kv"

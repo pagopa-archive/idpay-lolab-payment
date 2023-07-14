@@ -1,6 +1,6 @@
 package it.gov.pagopa.idpaylolabpayment;
 
-import it.gov.pagopa.ignitemember.IgniteMemberConfiguration;
+import it.gov.pagopa.idpaylolabpayment.config.IgniteMemberConfiguration;
 import org.apache.ignite.IgniteCache;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

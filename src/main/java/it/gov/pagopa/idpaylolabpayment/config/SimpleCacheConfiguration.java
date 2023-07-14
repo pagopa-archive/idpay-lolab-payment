@@ -1,6 +1,6 @@
 package it.gov.pagopa.idpaylolabpayment.config;
 
-import static it.gov.pagopa.ignitemember.IgniteMemberConfiguration.SIMPLE_CACHE_EVICTION_REGION;
+import static it.gov.pagopa.idpaylolabpayment.config.IgniteMemberConfiguration.SIMPLE_CACHE_EVICTION_REGION;
 
 import it.gov.pagopa.idpaylolabpayment.domain.Transaction;
 import it.gov.pagopa.idpaylolabpayment.infrastructure.idpay.ignite.TransactionMongoCacheAdapterFactory;
@@ -35,11 +35,10 @@ public class SimpleCacheConfiguration {
         .setName("transaction-cache")
         .setCacheMode(CacheMode.PARTITIONED)
         .setOnheapCacheEnabled(false)
-        .setBackups(1)
         .setReadThrough(true)
         .setWriteThrough(true)
-        .setWriteBehindEnabled(true)
-        .setWriteBehindFlushFrequency(5000) // every 5 seconds flush data
+        //.setWriteBehindEnabled(true)
+        //.setWriteBehindFlushFrequency(3000) // every 5 seconds flush data
         //.setWriteBehindFlushSize(1000) // evert 1000 update
         .setTypes(String.class, Transaction.class)
         .setCacheStoreFactory(new TransactionMongoCacheAdapterFactory().setDataSourceBean("transactionReactiveDao"))

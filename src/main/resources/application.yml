@@ -18,4 +18,5 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://localhost:27017/lolab_idpay
+      uri: ${MONGODB_CONNECTION_URI:mongodb://localhost:27017/lolab_idpay}
+      database: ${MONGODB_NAME:rtd}
