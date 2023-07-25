@@ -28,7 +28,12 @@ parameters:
   - name: 'VUS_MAX_ENV'
     displayName: 'Maximum number of virtual users'
     type: number
-
+  - name: 'SCRIPT_NAME'
+    displayName: 'Maximum number of virtual users'
+    type: string
+    values:
+      - /app/load-test/transaction-load-test.js
+      - /app/load-test/mockio-load-test.js
 jobs:
   - job:
     displayName: "Performance Test"
@@ -49,6 +54,6 @@ jobs:
             -e INITIAL_VUS=${{ parameters.INITIAL_VUS }} \
             -e RATE=${{ parameters.RATE }} \
             grafana/k6:latest \
-            run /app/load-test/transaction-load-test.js
+            run ${{ parameters.SCRIPT_NAME }}
         displayName: Run k6 Transaction Load Test
         timeoutInMinutes: 0
