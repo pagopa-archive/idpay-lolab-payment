@@ -12,7 +12,7 @@ export const options = {
             executor: 'constant-arrival-rate',
             rate: RATE,
             timeUnit: '1s', // 1000 iterations per second, i.e. 1000 RPS
-            duration: '2m',
+            duration: '7m',
             preAllocatedVUs: INITIAL_VUS, // how large the initial pool of VUs would be
             maxVUs: MAX_VUS, // if the preAllocatedVUs are not enough, we can initialize more
         }
