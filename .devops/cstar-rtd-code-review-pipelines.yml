@@ -28,6 +28,10 @@ parameters:
   - name: 'VUS_MAX_ENV'
     displayName: 'Maximum number of virtual users'
     type: number
+  - name: 'DURATION'
+    displayName: 'Duration of test, in s or m'
+    type: string
+    default: '2m'
   - name: 'SCRIPT_NAME'
     displayName: 'Maximum number of virtual users'
     type: string
@@ -53,6 +57,7 @@ jobs:
             -e MAX_VUS=${{ parameters.VUS_MAX_ENV }} \
             -e INITIAL_VUS=${{ parameters.INITIAL_VUS }} \
             -e RATE=${{ parameters.RATE }} \
+            -e DURATION=${{ parameters.DURATION }} \
             grafana/k6:latest \
             run ${{ parameters.SCRIPT_NAME }}
         displayName: Run k6 Transaction Load Test
